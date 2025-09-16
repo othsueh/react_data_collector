@@ -1,0 +1,20 @@
+Backend setup:
+    ✔ Create a postgres DB with name reaction_data_collect @done(25-09-14 20:51)
+    ✔ Connect sqlalchemy to the created db @done(25-09-14 20:51)
+    ✔ Create the whole schema @done(25-09-14 21:56)
+    ✔ Initial migration with Alembic @done(25-09-14 21:56)
+Backend Implementation:
+    ✔ Finish the complete design of schema @done(25-09-15 21:52)
+    ✔ Write the first version of api @done(25-09-15 21:52)
+    ✔ Test the api @done(25-09-15 21:52)
+Frontend:
+    ✔ Install node, pnpm @done(25-09-15 21:53)
+    ✔ Create the router @done(25-09-15 21:58)
+    ✔ Create api minimal helper @done(25-09-15 22:19)
+
+Design:
+    ☐ The layout
+    ☐ The home page
+    ☐ The setting page
+    ☐ The record page
+    ☐ The mrecord page

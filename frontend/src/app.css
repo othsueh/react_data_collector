@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+    /* Color */
+    --color-theme: oklch(44.39% 0.298 264.98);
+    --color-label: oklch(32.91% 0.059 225.83);
+    --color-create: oklch(59.23% 0.112 227.97);
+    --color-start: oklch(77.75% 0.160 166.57);
+    --color-end: oklch(64.76% 0.204 11.07);
+    /* Font Size */
+    --text-t1: 3rem;
+    --text-t2: 2.5rem;
+    --text-t3: 2rem;
+    --text-hl: 1.5rem;
+    /* Size */
+    --spacing: 6px;
+
+
+}
