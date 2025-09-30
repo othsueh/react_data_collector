@@ -1,70 +1,39 @@
 <script lang="ts">
 	import { Button } from '$lib';
-	import { backendFetch } from '$lib/api';
 	let { data } = $props();
 
 	let inSession = $state<boolean>(!!data.inStudentSession);
 	let count = $state(0);
 	let result = $state<number[]>([]);
-	let n_cycles = $state<number>(data.n_cycles ?? 0);
-	let waitingFor = $state<string | null>(data.waitFor ?? null);
 
 	$effect(() => {
 		inSession = !!data.inStudentSession;
-		waitingFor = data.waitFor ?? null;
 	});
 
-	async function pollUntilChanged() {
-		const interval = 1500;
-		const tick = async () => {
-			try {
-				const res = await backendFetch(fetch, '/student-sessions/current');
-				const cur = await res.json();
-				const curId = cur?.student_session_uuid ?? null;
-				if (!curId || curId !== waitingFor) {
-					location.replace('/mrecord');
-					return;
-				}
-			} catch {}
-			setTimeout(tick, interval);
-		};
-		setTimeout(tick, interval);
-	}
-
 	function push(val: number) {
-		if (!inSession || waitingFor) return;
-		if (count >= n_cycles) return;
+		if (!inSession) return;
+		if (count >= data.n_cycles) return;
 		result = [...result, val];
 		count = result.length;
-		if (count >= n_cycles) {
+		// Auto-submit when full
+		if (count >= data.n_cycles) {
 			queueMicrotask(() => {
 				const form = document.getElementById('mrecord-form') as HTMLFormElement | null;
 				form?.requestSubmit();
 			});
 		}
 	}
-
-	$effect(() => {
-		if (waitingFor) pollUntilChanged();
-	});
 </script>
 
-<div class="mt-24 flex min-h-screen flex-col items-center bg-white px-4 md:mt-24">
-	<h2 class="text-theme text-t2 text-center font-bold italic">mrecord</h2>
-	<div class="mb-12 flex flex-col items-center">
-		<svg width="192" height="8" class="mb-1"
-			><rect x="0" y="0" width="192" height="6" class="fill-theme" /></svg
-		>
-		<svg width="192" height="8"><rect x="0" y="0" width="192" height="6" class="fill-theme" /></svg>
+<div class="min-h-screen bg-white flex flex-col items-center mt-24 md:mt-24 px-4">
+	<h2 class="text-theme font-bold italic text-t2 text-center">mrecord</h2>
+	<div class="flex flex-col items-center mb-12">
+		<svg width="192" height="8" class="mb-1"><rect x="0" y="0" width="192" height="6" class="fill-theme"/></svg>
+		<svg width="192" height="8"><rect x="0" y="0" width="192" height="6" class="fill-theme"/></svg>
 	</div>
 
-	{#if waitingFor}
-		<div class="text-label text-t3 mt-8 space-y-4 text-center font-bold italic">
-			<p>Please wait for the current student session to complete.</p>
-			<p class="text-xs">(This page will refresh automatically.)</p>
-		</div>
-	{:else if !inSession}
-		<div class="text-label text-t3 mt-8 space-y-8 text-center font-bold italic">
+	{#if !inSession}
+		<div class="text-label font-bold italic text-t3 text-center space-y-8 mt-8">
 			<div>
 				<p>Not</p>
 				<p>In A</p>
@@ -72,9 +41,7 @@
 			</div>
 		</div>
 	{:else}
-		<div
-			class="text-label text-hl mb-6 flex w-full max-w-md flex-col items-center space-y-2 font-bold"
-		>
+		<div class="w-full flex flex-col items-center max-w-md space-y-2 text-label text-hl font-bold mb-6">
 			<p>擊球者： {data.studentName}</p>
 			<p>擊球數： {count} / {data.n_cycles}</p>
 		</div>
@@ -86,17 +53,11 @@
 			<input type="hidden" name="hit_miss_array" value={JSON.stringify(result)} />
 
 			<div class="w-full max-w-xs space-y-4">
-				<button
-					class="text-t2 w-full rounded-3xl bg-blue-500 py-16 font-bold text-white"
-					type="button"
-					onclick={() => push(1)}>打 / 不接</button
-				>
-				<button
-					class="text-t2 w-full rounded-3xl bg-pink-500 py-16 font-bold text-white"
-					type="button"
-					onclick={() => push(0)}>接 / 不打</button
-				>
+				<button class="w-full rounded-3xl py-16 font-bold text-white text-t2 bg-blue-500" type="button" onclick={() => push(1)}>打 / 不接</button>
+				<button class="w-full rounded-3xl py-16 font-bold text-white text-t2 bg-pink-500" type="button" onclick={() => push(0)}>接 / 不打</button>
 			</div>
+
+			<!-- Invisible submit target for server action -->
 		</form>
 	{/if}
 </div>

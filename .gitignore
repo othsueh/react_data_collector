@@ -2,7 +2,10 @@
 .vscode
 cfg.py
 temp.py
+.env
 
+
+alembic/
 node_modules/
 
 tmp/*

@@ -1,13 +1,12 @@
 import type { Actions, PageServerLoad } from './$types';
-import { backendFetchServer as backendFetch } from '$lib/api.server';
 import { redirect } from '@sveltejs/kit';
+import { backendFetchServer as backendFetch } from '$lib/api.server';
 
-export const load: PageServerLoad = async ({ fetch, url }) => {
-  const waitFor = url.searchParams.get('wait'); // studentSessionId to wait for
+export const load: PageServerLoad = async ({ fetch }) => {
   try {
     const curStuRes = await backendFetch(fetch, '/student-sessions/current');
     const curStu = await curStuRes.json();
-    if (!curStu) return { inStudentSession: false, waitFor };
+    if (!curStu) return { inStudentSession: false };
 
     const sessionRes = await backendFetch(fetch, '/sessions/current');
     const session = await sessionRes.json();
@@ -21,11 +20,10 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
       studentSessionId: curStu.student_session_uuid as string,
       studentId: curStu.student_id as number,
       studentName: student.name as string,
-      n_cycles: session.n_cycles as number,
-      waitFor
+      n_cycles: session.n_cycles as number
     };
   } catch {
-    return { inStudentSession: false, waitFor };
+    return { inStudentSession: false };
   }
 };
 
@@ -42,7 +40,6 @@ export const actions: Actions = {
       body: JSON.stringify({ session_id, student_session_id, student_id, hit_miss_array })
     });
 
-    // Redirect back with wait token
-    throw redirect(303, `/mrecord?wait=${encodeURIComponent(student_session_id)}`);
+    throw redirect(303,'/')
   }
 };
