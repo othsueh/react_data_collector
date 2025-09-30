@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '$lib';
 	let { data } = $props();
 
 	let inSession = $state<boolean>(!!data.inStudentSession);

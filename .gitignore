@@ -7,6 +7,7 @@ temp.py
 
 alembic/
 node_modules/
+backup/
 
 tmp/*
 tmp_test/*
